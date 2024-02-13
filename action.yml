@@ -1,6 +1,7 @@
 name: 'Novelty-PR-Notifier'
 description: 'Get PR Notification when finished'
 icon: '🔔'
+color: '#BF8B59'
 
 inputs:
   webhook:
