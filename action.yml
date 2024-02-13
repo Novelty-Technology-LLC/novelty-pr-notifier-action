@@ -1,0 +1,122 @@
+name: 'Novelty-PR-Notifier'
+description: 'Get PR Notification when finished'
+
+inputs:
+  webhook:
+    required: true
+    description: 'Google Chat Web Hook'
+
+  repoName:
+    required: true
+    description: 'Repository Name'
+
+  prTitle:
+    required: true
+    description: 'PR Title'
+
+  prNumber:
+    required: true
+    description: 'Pull Request Number'
+
+  prHtmlUrl:
+    required: true
+    description: 'PR HTML URL'
+
+  sourceBranch:
+    required: true
+    description: 'Source Branch From where the PR is created'
+
+  targetBranch:
+    required: true
+    description: 'Target Branch or Base Branch'
+
+  creator:
+    required: true
+    description: 'PR creator'
+
+  reviewer:
+    required: true
+    description: 'PR reviewers'
+
+  assigner:
+    required: true
+    description: 'PR assigner'
+
+  eventAction:
+    required: true
+    description: 'Event Action'
+
+runs:
+  using: composite
+  steps:
+    - name: Post Google Chat Message
+      shell: bash
+      run: |
+        curl --location --request POST '${{ inputs.webhook }}' \
+        --header 'Content-Type: application/json' \
+        --data-raw '{
+            "cards": [
+                {
+                  "header": {
+                      "title": "🤟😎 Yo! Next PR is here to steal the show. 😎✨",
+                      "subtitle": "PR Number: #${{ inputs.prNumber }} (${{inputs.eventAction}})"
+                  },
+                  "sections": [
+                    {
+                      "widgets": [
+                        {
+                          "keyValue": {
+                            "topLabel": "Creator",
+                            "content": "😏 ${{ inputs.creator }} "
+                          },
+                        },
+                        {
+                          "keyValue": {
+                            "topLabel": "PR Title",
+                            "content": "${{ inputs.prTitle }}"
+                          }
+                        },
+                        {
+                          "keyValue": {
+                            "topLabel": "Repository Name",
+                            "content": "${{ inputs.repoName }}"
+                          }
+                        },
+                        {
+                          "keyValue": {
+                            "topLabel": "Merge Branch",
+                            "content": "${{ inputs.sourceBranch }} >>> ${{ inputs.targetBranch }}"
+                          }
+                        },
+                        {
+                          "keyValue": {
+                            "topLabel": "Requested Reviewers",
+                            "content": "- ${{ inputs.reviewer }}"
+                          }
+                        },
+                        {
+                          "keyValue": {
+                            "topLabel": "Assignees",
+                            "content": "- ${{ inputs.assigner }}"
+                          }
+                        },
+                        {
+                          "buttons": [
+                            {
+                              "textButton": {
+                                "text": "OPEN PR",
+                                "onClick": {
+                                  "openLink": {
+                                    "url": "${{ inputs.prHtmlUrl }}"
+                                  }
+                                },
+                              },
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                }
+            ]
+        }'
