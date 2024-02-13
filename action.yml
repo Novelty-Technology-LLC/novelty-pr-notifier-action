@@ -1,6 +1,6 @@
 name: 'Novelty-PR-Notifier'
 description: 'Get PR Notification when finished'
-
+icon: 'bell'
 inputs:
   webhook:
     required: true
